@@ -14,6 +14,7 @@ export const SignIn = (req, res) => {
     }
 
 }
+
 export const LogIn = (req, res) => {
 
     try {
@@ -22,6 +23,7 @@ export const LogIn = (req, res) => {
 
     }
 }
+
 export const LogOut = (req, res) => {
 
     try {
