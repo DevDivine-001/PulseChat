@@ -1,5 +1,6 @@
 import bcryptjs from 'bcryptjs'
 import User from '../model/auth.model.js'
+import { TokenCode } from '../Database/utils.js'
 
 export const SignIn = async (req, res) => {
 
@@ -30,20 +31,30 @@ export const SignIn = async (req, res) => {
 
 
         if (newUser) {
+            TokenCode(newUser._id, res)
+            await newUser.save()
+
+            res.status(201).json({
+                // _id: newUser._id,
+                // fullname: newUser.fullname,
+                // username: newUser.username,
+                // email: newUser.email,
+                // profilePic: newUser.profilePic,
+                message: "User has been Created",
+            })
 
         } else {
             res.status(400).json({ message: "Invalid user data" })
 
         }
-
-        await newUser.save()
-
-
     } catch (error) {
-
+        console.log("Error in signup the User", error.message)
+        res.status(500).json({ message: "Internal Server Error" })
     }
 
 }
+
+
 
 export const LogIn = async (req, res) => {
     const { username, email, password, } = req.body
