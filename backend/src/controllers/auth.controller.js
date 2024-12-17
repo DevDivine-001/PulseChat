@@ -42,15 +42,15 @@ export const SignIn = async (req, res) => {
 
 
 export const LogIn = async (req, res) => {
-    const { email, password, } = req.body
+    const { username, email, password, } = req.body
 
     try {
 
-        if (!email || !password) {
+        if (!username || !email || !password) {
             return res.status(400).json({ message: "Email,username and password are required" });
         }
 
-        const user = await User.findOne({ email, })
+        const user = await User.findOne({ username, email, })
         if (!user) {
             return res.status(400).json({ message: "Invalid credent" })
         }
