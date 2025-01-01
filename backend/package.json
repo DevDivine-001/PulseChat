@@ -9,7 +9,7 @@
     "start": "nodemon src/app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "DevDivine001",
   "license": "ISC",
   "description": "",
   "dependencies": {

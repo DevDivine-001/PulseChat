@@ -2,11 +2,11 @@ import bcryptjs from 'bcryptjs'
 import User from '../model/auth.model.js'
 import { TokenCode } from '../Database/utils.js'
 
-export const SignIn = async (req, res) => {
-    const { fullname, username, email, password, profilePic } = req.body;
+export const SignUp = async (req, res) => {
+    const { fullname, username, email, password, } = req.body;
 
     try {
-        if (!fullname || !username || !email || !password || !profilePic) {
+        if (!fullname || !username || !email || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -24,7 +24,7 @@ export const SignIn = async (req, res) => {
             fullname,
             username,
             email,
-            profilePic,
+            // profilePic,
             password: hashedPassword,
         });
 
@@ -62,10 +62,10 @@ export const LogIn = async (req, res) => {
 
         TokenCode(user._id, res)
         res.status(200).json({
-            // _id: user._id,
-            // username: user.username,
-            // email: user.email,
-            message: "User Logged in successfully"
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            // message: "User Logged in successfully"
 
         })
 
@@ -89,25 +89,12 @@ export const LogOut = (req, res) => {
     }
 }
 
-export const updateProfile = async (req, res) => {
+
+export const CheckAuth = (req, res) => {
     try {
-        const { profilePic } = req.body;
-        const userId = req.user._id;
-
-        if (!profilePic) {
-            return res.status(400).json({ message: "Profile pic is required" });
-        }
-
-        const uploadResponse = await cloudinary.uploader.upload(profilePic);
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { profilePic: uploadResponse.secure_url },
-            { new: true }
-        );
-
-        res.status(200).json(updatedUser);
+        res.status(200).json(req.user)
     } catch (error) {
-        console.log("error in update profile:", error);
-        res.status(500).json({ message: "Internal server error" });
+        console.log("Error in CheckAuth User")
+        res.status(500).json({ message: "Internal Server Error" })
     }
-};
+}
