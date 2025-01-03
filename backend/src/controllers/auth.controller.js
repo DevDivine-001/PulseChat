@@ -1,9 +1,13 @@
 import bcryptjs from 'bcryptjs'
 import User from '../model/auth.model.js'
 import { TokenCode } from '../Database/utils.js'
+import cloudinary from '../Database/cloudinary.js';
+// import { errorHandler } from '../middleware/Error.middleware.js';
+import { errorHandler } from '../middleware/Error.middleware.js';
 
 export const SignUp = async (req, res) => {
-    const { fullname, username, email, password, } = req.body;
+    const {
+        fullname, username, email, password, } = req.body;
 
     try {
         if (!fullname || !username || !email || !password) {
@@ -21,9 +25,9 @@ export const SignUp = async (req, res) => {
 
         const hashedPassword = await bcryptjs.hash(password, 10);
         const newUser = new User({
-            fullname,
-            username,
-            email,
+            fullname: fullname,
+            username: username,
+            email: email,
             // profilePic,
             password: hashedPassword,
         });
@@ -63,9 +67,9 @@ export const LogIn = async (req, res) => {
         TokenCode(user._id, res)
         res.status(200).json({
             _id: user._id,
-            username: user.username,
-            email: user.email,
-            // message: "User Logged in successfully"
+            // username: user.username,
+            // email: user.email,
+            message: "User Logged in successfully"
 
         })
 
@@ -98,3 +102,55 @@ export const CheckAuth = (req, res) => {
         res.status(500).json({ message: "Internal Server Error" })
     }
 }
+
+export const updateProfile = async (req, res, next) => {
+
+    try {
+
+        // if (req.user.id !== req.params.id) {
+        //     return next(errorHandler(401, 'You can only update your own account! When you are login ..'));
+        // }
+        const { profilePic, username, email, password } = req.body;
+        const userId = req.user._id;
+
+        if (!profilePic || !username || !email || !password) {
+            return res.status(400).json({ message: "Profile pic is required" });
+        }
+
+        if (password && password.length < 6) {
+            return res.status(400).json({ message: "Your Password must be at least 6 characters long." })
+
+        }
+        const updates = { username, email, password }
+
+        if (password && password.length < 6) {
+            updates.password = bcryptjs.hashSync(password, 10)
+
+        }
+
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        updates.profilePic = uploadResponse.secure_url
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updates },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        const { password: _, ...rest } = updatedUser._doc
+
+        res.status(200).json({
+            message: "Profile updated successfully!",
+            user: rest,
+        });
+    } catch (error) {
+        console.log("error in update profile:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+

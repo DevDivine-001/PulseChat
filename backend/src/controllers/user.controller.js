@@ -1,144 +1,105 @@
-import { errorHandler } from "../middleware/Error.middleware.js";
-import User from "../model/auth.model.js";
-import bcryptjs from "bcryptjs"
-import cloudinary from "cloudinary";
-
-
-// export const updateProfile = async (req, res, next) => {
-//     if (req.user.id !== req.params.id)
-//         return next(errorHandler(401, 'You  can only update your own account!'));
-//     try {
-//         const { profilePic, username, email, } = req.body;
-//         const userId = req.user._id;
-
-//         // if (!profilePic || !username || !email || !password) {
-//         //     return res.status(400).json({ message: "All fields are required for Update" });
-//         // };
-
-//         if (password.length < 6) {
-//             return res.status(400).json({ message: "Password must be at least 6 characters" });
-//         };
-
-//         if (req.body.password) {
-//             req.body.password = bcryptjs.hashSync(req.body.password, 10)
-
-//         };
-
-//         const uploadResponse = await cloudinary.uploader.upload(profilePic);
-//         const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-//             $set: {
-//                 userId,
-//                 username: req.body.username,
-//                 email: req.body.email,
-//                 password: req.body.password,
-//                 profilePic: req.body.profilePic
-//             },
-//         },
-//             { profilePic: uploadResponse.secure_url },
-//             { new: true },
-//         );
-//         const { password, ...rest } = updatedUser._doc
-
-//         res.status(200).json(updatedUser, rest);
-//         // res.status(201).json(rest)
-//     } catch (error) {
-//         console.log("error in update profile:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//         next(error)
-//     }
-// };
-
-
-
-// export const DeleteAccount = async (req, res, next) => {
-
-//     if (req.user.id === req.params.id)
-//         // {
-//         return next(errorHandler(400, "You can only delete your own account when LogIn.."))
-
-//     // }
-//     try {
-//         await User.findByIdAndDelete(req.params.id)
-//         res.clearCookie("jwt", "access_token", { maxAge: 0 })
-//         res.status(200).json({ message: "User been deleted 😭😭😭😭!!!" })
-
-//     } catch (error) {
-//         next(error)
-
-
-//     }
-// }
+import bcryptjs from 'bcryptjs';
+import cloudinary from 'cloudinary';
+import User from '../model/auth.model.js';
+import { errorHandler } from '../middleware/Error.middleware.js';
+import mongoose from 'mongoose';
 
 export const updateProfile = async (req, res, next) => {
-    if (req.user.id !== req.params.id) {
-        return next(errorHandler(401, 'You can only update your own account!'));
-    }
-
     try {
+        if (!req.user || !req.user.id) {
+            return next(errorHandler(401, 'You can only update your own account!'));
+        }
+
+        const userId = req.user.id;
+        // Ensure this is coming from the middleware
+
+        // Validate userId format
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({ message: "Invalid user ID format" });
+        }
+
         const { profilePic, username, email, password } = req.body;
-        const userId = req.user._id;
 
-        // Validate required fields
-        if (!username || !email || (password && password.length < 6)) {
-            return res.status(400).json({ message: "All fields are required and password must be at least 6 characters" });
+        if (!profilePic || !username || !email || !password) {
+            return res.status(400).json({ message: "Profile pic, username, email, and password are required." });
         }
-        console.log(userId)
 
-        // Hash password if provided
+        if (password && password.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters long." });
+        }
+
+        const updates = { username, email };
+
         if (password) {
-            req.body.password = bcryptjs.hashSync(password, 10);
+            updates.password = bcryptjs.hashSync(password, 10);
         }
 
-        // Upload profile picture to Cloudinary if present
-        let uploadedProfilePic = req.body.profilePic;
-        if (profilePic) {
-            const uploadResponse = await cloudinary.uploader.upload(profilePic);
-            uploadedProfilePic = uploadResponse.secure_url; // Get the secure URL from Cloudinary
-        }
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+        updates.profilePic = uploadResponse.secure_url;
 
-        // Update user details
         const updatedUser = await User.findByIdAndUpdate(
-            req.params.id,
-            {
-                $set: {
-                    username,
-                    email,
-                    password: req.body.password,
-                    profilePic: uploadedProfilePic
-                }
-            },
-            { new: true } // To return the updated document
+            userId,
+            { $set: updates },
+            { new: true }
         );
 
-        // Remove password field from response
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const { password: _, ...rest } = updatedUser._doc;
 
-        res.status(200).json(rest);
+        res.status(200).json({
+            message: "Profile updated successfully!",
+            user: rest,
+        });
     } catch (error) {
-        console.log("Error in update profile:", error);
+        console.error("Error in updateProfile:", error);
         res.status(500).json({ message: "Internal server error" });
-        next(error);
     }
 };
 
+
 export const DeleteAccount = async (req, res, next) => {
-    // Ensure user can only delete their own account
-    if (req.user.id !== req.params.id) {
-        return next(errorHandler(401, 'You can only delete your own account..😭😭😭😭'));
-    }
-
     try {
-        // Delete user account from database
-        await User.findByIdAndDelete(req.params.id);
+        let userId = req.params.id;
 
-        // Clear authentication cookies (JWT token)
-        res.clearCookie('access_token');
+        // Log the received ID for debugging
+        // console.log("Received user ID:", userId);
+
+        // Remove invalid characters (e.g., ":" or extra spaces)
+        userId = userId.replace(/[^a-fA-F0-9]/g, '');
+
+        // Validate the sanitized ID
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user ID format. Please provide a valid 24-character hexadecimal string."
+            });
+        }
+
+        // Find and delete the user
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found.",
+            });
+        }
 
         // Send success response
-        res.status(200).json({ message: "User has been deleted 😭😭😭😭!!!" });
+        res.status(200).json({
+            success: true,
+            message: "Account deleted successfully!",
+            // user: deletedUser,
+        });
     } catch (error) {
-        // Handle any potential errors
         console.error("Error deleting account:", error);
-        next(error); // Pass error to error handler middleware
+        next(),
+            res.status(500).json({
+                success: false,
+                message: "Internal server error.",
+            });
     }
 };
