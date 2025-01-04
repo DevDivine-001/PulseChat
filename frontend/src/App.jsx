@@ -9,9 +9,12 @@ import Profile from "./pages/Profile";
 import LandingPages from "./pages/LandingPages";
 import { AuthStore } from "./store/Auth.store";
 import { Loader } from "lucide-react";
+import { useThemeStore } from "./store/useThemeStore";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = AuthStore();
+  const { theme } = useThemeStore()
 
   useEffect(() => {
     checkAuth().catch((error) => console.error("Authentication error:", error));
@@ -34,20 +37,17 @@ const App = () => {
   ];
 
   return (
-    <div className="text-white">
+    <div className="" data-theme={theme}>
       <Navbar />
       <Routes>
         {routes.map(({ path, element }) => (
           <Route key={path} path={path} element={element} />
         ))}
       </Routes>
+      <Toaster />
     </div>
   );
 };
 
 export default App;
-
-
-
-
 
