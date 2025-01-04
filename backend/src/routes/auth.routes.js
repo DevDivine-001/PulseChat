@@ -13,10 +13,10 @@ const router = express.Router()
 router.post("/signup", SignUp)
 router.post("/login", LogIn)
 router.post("/logout", LogOut)
-router.patch("/users/:id", protectRoute,
+router.put("/update-profile/:id", protectRoute,
     updateProfile
-)
+),
 
-router.get("/check", protectRoute, CheckAuth)
+    router.get("/check", protectRoute, CheckAuth)
 
 export default router

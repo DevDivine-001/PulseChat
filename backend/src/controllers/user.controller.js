@@ -4,6 +4,7 @@ import User from '../model/auth.model.js';
 import { errorHandler } from '../middleware/Error.middleware.js';
 import mongoose from 'mongoose';
 
+
 export const updateProfile = async (req, res, next) => {
     try {
         if (!req.user || !req.user.id) {
@@ -20,15 +21,15 @@ export const updateProfile = async (req, res, next) => {
 
         const { profilePic, username, email, password } = req.body;
 
-        if (!profilePic || !username || !email || !password) {
-            return res.status(400).json({ message: "Profile pic, username, email, and password are required." });
-        }
+        // if (!profilePic || !username || !email || !password) {
+        //     return res.status(400).json({ message: "Profile pic, username, email, and password are required." });
+        // }
 
         if (password && password.length < 6) {
             return res.status(400).json({ message: "Password must be at least 6 characters long." });
         }
 
-        const updates = { username, email };
+        const updates = { username, email, password };
 
         if (password) {
             updates.password = bcryptjs.hashSync(password, 10);
@@ -40,7 +41,7 @@ export const updateProfile = async (req, res, next) => {
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             { $set: updates },
-            { new: true }
+            { new: true },
         );
 
         if (!updatedUser) {
