@@ -22,7 +22,7 @@ const Profile = () => {
         };
     };
     return (
-        <div className="h-screen pt-2">
+        <div className="h-[115vh] pt-2">
             <div className="max-w-2xl mx-auto p-8 py-8">
                 <div className="bg-base-300 rounded-xl p-4 space-y-8">
                     <div className="text-center">

@@ -12,7 +12,7 @@ const Settings = () => {
     const { authUser } = AuthStore()
 
     return (
-        <div className="h-screen container mx-auto px-4 pt-20 max-w-5xl">
+        <div className="h-[140vh] container mx-auto px-4 pt-20 max-w-5xl">
             <div className="space-y-6">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-lg font-semibold">Theme</h2>
