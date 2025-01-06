@@ -38,5 +38,8 @@ export const useChatState = create((set) => ({
         }
     },
 
-    useSelectedUser: (selectedUser) => set({ selectedUser })
+    setSelectedUser: (selectedUser) => set({ selectedUser }),
 }))
+
+
+
