@@ -36,5 +36,7 @@ export const useChatState = create((set) => ({
         } finally {
             set({ isMessagesLoading: false })
         }
-    }
+    },
+
+    useSelectedUser: (selectedUser) => set({ selectedUser })
 }))
