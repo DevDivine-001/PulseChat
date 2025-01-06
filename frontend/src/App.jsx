@@ -29,9 +29,9 @@ const App = () => {
 
   const routes = [
     { path: "/", element: <LandingPages /> },
-    { path: "/homepage", element: authUser ? <Homepage /> : <Navigate to="/login" /> },
+    { path: "/chat", element: authUser ? <Homepage /> : <Navigate to="/login" /> },
     { path: "/signup", element: !authUser ? <SignUp /> : <Navigate to="/login" /> },
-    { path: "/login", element: !authUser ? <LogIn /> : <Navigate to="/homepage" /> },
+    { path: "/login", element: !authUser ? <LogIn /> : <Navigate to="/chat" /> },
     { path: "/profile", element: authUser ? <Profile /> : <Navigate to="/login" /> },
     { path: "/settings", element: authUser ? <Settings /> : <Navigate to="/login" /> },
   ];

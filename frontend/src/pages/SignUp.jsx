@@ -18,13 +18,17 @@ const SignUp = () => {
     const { signup, isSigningUp } = AuthStore();
 
     const validateForm = () => {
-        if (!formData.fullname.trim()) return toast.error("Full name is required");
-        if (!formData.email.trim()) return toast.error("Email is required");
-        if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
-        if (!formData.password) return toast.error("Password is required");
-        if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
+        try {
+            if (!formData.fullname.trim()) return toast.error("Full name is required");
+            if (!formData.email.trim()) return toast.error("Email is required");
+            if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
+            if (!formData.password) return toast.error("Password is required");
+            if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
 
-        return true;
+            return true;
+        } catch (error) {
+            return console.log(error)
+        }
     };
 
     const handleSubmit = (e) => {
@@ -36,7 +40,7 @@ const SignUp = () => {
     };
 
     return (
-        <div className="min-h-[30vh] grid lg:grid-clos-2">
+        <div className="h-[100vh] grid lg:grid-clos-2">
             {/* left side */}
             <div className="flex flex-col justify-center items-center p-2 sm:p-12">
                 <div className="w-full max-w-md gap-[1px] min-h-[10px]">

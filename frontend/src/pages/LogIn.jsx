@@ -18,7 +18,7 @@ const LogIn = () => {
     };
 
     return (
-        <div className="min-h-[30vh] grid lg:grid-clos-2">
+        <div className="min-h-[30vh] grid lg:grid-clos-2 max-sm:h-[100vh] max-2xl:h-screen">
             {/* Left Side - Form */}
             <div className="flex flex-col justify-center items-center p-3 sm:p-12">
                 <div className="w-full max-w-md space-y-3">
