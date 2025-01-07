@@ -14,16 +14,18 @@ const ChatBox = () => {
 
     }, [selectedUser._id, getMessages])
 
-    if (!isMessagesLoading) return (
-        <div className="flex  flex-col flex-1 overflow-auto">
-            <div className="flex justify-center items-center">
-                <Loader2 className="animate-spin size-7 absolute  mt-64 flex justify-center items-center" />
+    if (isMessagesLoading) {
+        return (
+            <div className="flex  flex-col flex-1 overflow-auto">
+                <div className="flex justify-center items-center">
+                    <Loader2 className="animate-spin size-7 absolute  mt-64 flex justify-center items-center" />
+                </div>
+                <ChatHeader />
+                <MessageSkeletons />
+                <MessageInput />
             </div>
-            <ChatHeader />
-            <MessageSkeletons />
-            <MessageInput />
-        </div>
-    )
+        )
+    }
     return (
         <div className="flex-1 flex flex-col overflow-auto">
             <ChatHeader />
