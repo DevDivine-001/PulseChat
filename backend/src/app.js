@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 // app.use("/api/delete", userRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRoutes)
-app.use("/api/massage", massageRoutes)
+app.use("/api/messages", massageRoutes)
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../frontend/dist")));
