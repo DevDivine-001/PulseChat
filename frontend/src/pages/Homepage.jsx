@@ -1,4 +1,3 @@
-// import { Sidebar } from "lucide-react"
 import { useChatState } from "../store/ChatStore"
 import NoChatSelected from "../components/NoChatSelected"
 import ChatBox from "../components/ChatBox"

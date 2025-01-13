@@ -1,8 +1,8 @@
+import SidleSkeleton from "./Skeletons/SidleSkeleton";
 import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
-import { AuthStore } from "../store/Auth.store";
 import { useChatState } from "../store/ChatStore";
-import SidleSkeleton from "./Skeletons/SidleSkeleton";
+import { AuthStore } from "../store/Auth.store";
 
 const Sidebar = () => {
     const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatState();
