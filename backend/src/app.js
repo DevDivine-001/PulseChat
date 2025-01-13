@@ -7,6 +7,7 @@ import userRouter from "./routes/user.routes.js"
 import dotenv from "dotenv"
 import { connectDB } from "./Database/db.js"
 import cookieParser from "cookie-parser"
+import { app, server } from "./Database/socket.js"
 
 
 
@@ -16,7 +17,7 @@ dotenv.config()
 const Port = process.env.Port
 const __dirname = path.resolve();
 
-const app = express()
+// const app = express()
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
@@ -34,7 +35,6 @@ app.get("/", (req, res) => {
 
 })
 
-// app.use("/api/delete", userRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRoutes)
 app.use("/api/messages", massageRoutes)
@@ -59,7 +59,7 @@ app.use((err, req, res, next) => {
     })
 })
 
-app.listen(Port, () => {
+server.listen(Port, () => {
     console.log("server is running on PORT:  👋👋👋👋👋👋💓" + Port)
     connectDB()
 })

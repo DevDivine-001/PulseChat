@@ -2,8 +2,7 @@ import bcryptjs from 'bcryptjs'
 import User from '../model/auth.model.js'
 import { TokenCode } from '../Database/utils.js'
 import cloudinary from '../Database/cloudinary.js';
-// import { errorHandler } from '../middleware/Error.middleware.js';
-import { errorHandler } from '../middleware/Error.middleware.js';
+
 
 export const SignUp = async (req, res) => {
     const {

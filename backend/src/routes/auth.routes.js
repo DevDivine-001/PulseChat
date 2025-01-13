@@ -5,7 +5,6 @@ import {
     updateProfile,
 } from "../controllers/auth.controller.js"
 import { protectRoute } from "../middleware/auth.middleware.js"
-// import { updateProfile } from "../controllers/user.controller.js"
 
 
 const router = express.Router()
